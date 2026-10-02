@@ -15,14 +15,11 @@ class UserRepository{
         return user;
     }
     async updateUser(email, data) {
-        console.log(email)
-        console.log(data)
-        return 
-        // return await User.findOneAndUpdate(
-        //     { email: email },
-        //     { $set: data },
-        //     { new: true, runValidators: true }
-        // );
+        return await User.findOneAndUpdate(
+            { email: email },
+            { $set: data },
+            { new: true, runValidators: true }
+        );
     }
     deleteById(id){
         return User.findByIdAndDelete(id)

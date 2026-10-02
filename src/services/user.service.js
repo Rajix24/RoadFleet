@@ -21,10 +21,9 @@ class UserService{
             throw new Error(error)
         }
     }
-    updateUserInfo = async (req, res) =>{
-        console.log(req.body)
+    updateUserInfo = async (email, data) =>{
         try {
-            const result =  await this.UserRepository.updateUser()
+            const result =  await this.UserRepository.updateUser(email, data)
             return result;
         } catch (error) {
             throw new Error(error)

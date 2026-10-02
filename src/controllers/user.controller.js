@@ -28,8 +28,13 @@ class UserController {
         }
         
         UpdateUser = async(req, res) => {
-            console.log(req.body)
-        }
+            const data = req.body
+            const email = req.params.email
+            const result = await this.UserService.updateUserInfo(email, data)
+            console.log(result)
+            res.status(200).json({message: "controller is wroking", 
+                                    data: result})
+        }   
         createUser(req, res){
             console.log(req.body)
             return 
