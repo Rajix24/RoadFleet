@@ -29,6 +29,15 @@ class UserService{
             throw new Error(error)
         }
     } 
+    deleteUser = async (email) => {
+        try {
+            const result = await this.UserRepository.deleteByEmail(email)
+            return result;
+        }catch(error){
+            console.log(error)
+            throw new Error(error)
+        }
+    }
 }
 
 module.exports = new UserService();

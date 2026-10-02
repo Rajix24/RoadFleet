@@ -35,9 +35,20 @@ class UserController {
             res.status(200).json({message: "controller is wroking", 
                                     data: result})
         }   
-        createUser(req, res){
-            console.log(req.body)
-            return 
+        deleteUser = async (req, res) =>{
+            const email = req.params.email;
+            try{
+                const  result = await this.UserService.deleteUser(email) 
+                res.status(200).json({
+                    message: "u has beed delete the user", 
+                    result: result 
+                })
+            }catch(error){
+                res.status(400).json({
+                    message: "error in deleting user",
+                    error: error
+                })
+            }
         }
 }
 

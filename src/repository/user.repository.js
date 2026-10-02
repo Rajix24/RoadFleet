@@ -21,8 +21,8 @@ class UserRepository{
             { new: true, runValidators: true }
         );
     }
-    deleteById(id){
-        return User.findByIdAndDelete(id)
+    async deleteByEmail(email){
+        return await User.deleteOne({email: email})
     }
 }
 

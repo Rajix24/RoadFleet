@@ -8,6 +8,7 @@ const {validate} = require("../middlewares/validation.middleware")
 route.get("/users",auth_middleware, UserController.getAll)
 route.get("/user/:email",auth_middleware,UserController.getOneUser)
 route.put("/user/:email",  UserController.UpdateUser)
+route.delete("/user/:email", UserController.deleteUser)
 
 
 
