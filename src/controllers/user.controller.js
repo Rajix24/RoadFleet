@@ -14,19 +14,25 @@ class UserController {
                 res.status(400).json({message: `error in server in user controller ${error}`})
             }
         }
-        async getOneUser(req, res){
+        getOneUser = async (req, res) => {
             try {
-
-                console.log(req.body)
-                return 
-                const user = await this.UserService.getOne(req.body)
+               const email = req.params.email;
+               const user = await this.UserService.getOne(email)
+                res.status(200).json({
+                    message: true,
+                    data: user
+                });
             } catch (error) {
                 res.status(400).json({message: `error in finding user  ${error}` })
             }
         }
-
-        async createUser(req, res){
-            console.log(req)
+        
+        UpdateUser = async(req, res) => {
+            console.log(req.body)
+        }
+        createUser(req, res){
+            console.log(req.body)
+            return 
         }
 }
 

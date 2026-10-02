@@ -25,7 +25,7 @@ const userSchema = new mongo.Schema({
         required: true
      },
      role:{
-      type: string ,
+      type: String,
       enum: {
          values: ["admin", "chauffeur"],
          message: "{VALUE} is not valid role"

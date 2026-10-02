@@ -1,37 +1,31 @@
-const user = require("../models/user.model")
+const User = require("../models/user.model")
 
 
 class UserRepository{
     async findAll() {
         try {
-            const users = await user.find()
+            const users = await User.find()
             return users;
         } catch (error) {
             console.log(error)
         }
     }
-
-    async findById(email){
-        return await user.findOne({email: email})
+    async findByEmail(email){
+        const user =  await User.findOne({email: email})
+        return user;
     }
-    async create(data){
-        try {
-            const newUser = new user(req.body)
-            const {email} = newUser
-
-            const userExits = await user.findOne({email})
-
-            if (userExits) {
-                return res.status(400).json({message: "user all ready exist"})
-            }
-            const saveDate = await newUser.save()
-            res.status(201).json(saveDate)
-        } catch (error) {
-            
-        }
+    async updateUser(email, data) {
+        console.log(email)
+        console.log(data)
+        return 
+        // return await User.findOneAndUpdate(
+        //     { email: email },
+        //     { $set: data },
+        //     { new: true, runValidators: true }
+        // );
     }
     deleteById(id){
-        return user.findByIdAndDelete(id)
+        return User.findByIdAndDelete(id)
     }
 }
 

@@ -39,11 +39,20 @@ async function login_user(req, res){
         return res.status(500).json({message: " server error " , error})
     }
 }
+
+
+
 // THAT FUNCTION IS DONE 
 async function register_user(req, res){
+    console.log(req.body)
     try {
         //GET DATA :
-        const {name, email, password} = req.body
+        const {
+            first_name,
+            last_name, 
+            email,
+            password,
+         } = req.body
         const current_user = await User.findOne({email})
         
         if(current_user){
@@ -56,7 +65,8 @@ async function register_user(req, res){
         // CREATE USER IN DATABASE
         const new_user =  await User.create(
             {
-                name:name,
+                first_name:first_name,
+                last_name: last_name,
                 email: email,
                 password: encrypted_password
             })
@@ -71,6 +81,8 @@ async function register_user(req, res){
         return res.status(500).message({ message: "Server Error!" });
     }
 }
+
+
 //THAT FUNCTION IS DONE
 function check_auth(req, res){
     const  token =  req.cookies.access_token;

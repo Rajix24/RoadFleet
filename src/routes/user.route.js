@@ -3,11 +3,12 @@ const route = express.Router()
 const UserController = require("../controllers/user.controller")
 const auth_middleware = require("../middlewares/auth_middleware")
 const {validate} = require("../middlewares/validation.middleware")
-const {register_validator} = require("../validators/user.validator")
+// const {register_validator} = require("../validators/user.validator")
 
-route.get("/user",auth_middleware, UserController.getAll)
-route.get("/user/:email", auth_middleware, UserController.getOneUser)
-route.post("/user", auth_middleware, register_validator, validate, UserController.createUser)
+route.get("/users",auth_middleware, UserController.getAll)
+route.get("/user/:email",auth_middleware,UserController.getOneUser)
+route.put("/user/:email",  UserController.UpdateUser)
+
 
 
 module.exports = route
