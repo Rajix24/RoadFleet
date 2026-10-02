@@ -24,6 +24,10 @@ class UserController {
                 res.status(400).json({message: `error in finding user  ${error}` })
             }
         }
+
+        async createUser(req, res){
+            console.log(req)
+        }
 }
 
 module.exports = new UserController();
