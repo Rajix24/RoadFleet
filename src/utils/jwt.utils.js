@@ -5,7 +5,9 @@ function generate_token(user) {
 }
 
 function verify_token(token){
-    return jwt.verify(token, process.env.JWT_SECRET)
+    const  data =  jwt.verify(token, process.env.JWT_SECRET)
+    req.user = data;
+    return data;
 }
 function setToken(current_user, res){
     const token = generate_token(current_user)

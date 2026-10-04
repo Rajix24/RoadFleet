@@ -9,11 +9,13 @@ async function auth_middleware(req, res, next) {
         });
     }
     try{
-
         const result = verify_token(token)
         const user = await User.findOne({email: result.email}).select("-password")
+        if (!user) {return res.status(401).json({message: "User not found"});        }
         req.user = user;
+        console.log(token)
         next()
+
     }catch(error){
         res.send(error)
     }
