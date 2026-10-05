@@ -4,8 +4,16 @@ const userRouter = require("./src/routes/user.route")
 const path = require("path")
 const auth_router = require("./src/routes/auth.router")
 const cookieParser = require("cookie-parser")
-
+const swagger = require("./src/utils/swagger")
 require("dotenv").config()
+
+
+
+// console.log(options.defifnition.servers)
+
+
+
+
 
 
 const app = express()
@@ -40,4 +48,4 @@ mongoose.connect(mongoseURL).then(()=>{
     console.log("error in connect to Database")
 })
 
-
+swagger(app)
