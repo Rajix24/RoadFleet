@@ -3,7 +3,7 @@ const route = express.Router()
 const UserController = require("../controllers/user.controller")
 const auth_middleware = require("../middlewares/auth_middleware")
 const {validate} = require("../middlewares/validation.middleware")
-const { roleMiddleware } = require("../middlewares/role.middleware")
+const  roleMiddleware  = require("../middlewares/role.middleware")
 // const {register_validator} = require("../validators/user.validator")
 
 
@@ -24,7 +24,7 @@ const { roleMiddleware } = require("../middlewares/role.middleware")
  *       403:
  *         description: User is not authorized.
  */
-route.get("/users",auth_middleware, roleMiddleware('admin'), UserController.getAll)
+route.get("/users",auth_middleware, roleMiddleware("chauffeur"), UserController.getAll)
 
 /**
  * @swagger

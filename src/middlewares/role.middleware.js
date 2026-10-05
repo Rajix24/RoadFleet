@@ -7,9 +7,10 @@ const roleMiddleware = (requiredRole) => (req, res, next)=>{
     if (req.user?.role !== requiredRole) {
         console.log("❌ Role rejected");
 
-        return res.status(403).json({
+        console.log(req.user.role)
+        return res.status(401).json({
             message: "Not authorized"
-        });
+        }); 
     }
 
     console.log("✅ Role accepted");
@@ -17,4 +18,4 @@ const roleMiddleware = (requiredRole) => (req, res, next)=>{
 }
 
 
-module.exports = {roleMiddleware}
+module.exports = roleMiddleware
