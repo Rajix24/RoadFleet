@@ -2,9 +2,7 @@ const express =  require("express")
 const route = express.Router()
 const UserController = require("../controllers/user.controller")
 const auth_middleware = require("../middlewares/auth_middleware")
-const {validate} = require("../middlewares/validation.middleware")
 const  roleMiddleware  = require("../middlewares/role.middleware")
-// const {register_validator} = require("../validators/user.validator")
 
 
 

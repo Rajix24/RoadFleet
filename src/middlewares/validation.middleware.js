@@ -5,7 +5,7 @@ function validate(req, res, next){
     console.log(error)
     if(!error.isEmpty()){
         console.log(error)
-        return res.status(400).json({massage: `validation failed  ${error.massage}`})
+        return res.status(400).json({massage: `validation failed`, error : error})
     }
     next()
 }

@@ -1,7 +1,8 @@
 const express = require('express')
 const mongoose = require('mongoose')
 const userRouter = require("./src/routes/user.route")
-const path = require("path")
+const camionRouter = require("./src/routes/camion.route")
+// const path = require("path")
 const auth_router = require("./src/routes/auth.router")
 const cookieParser = require("cookie-parser")
 const swagger = require("./src/utils/swagger")
@@ -33,8 +34,14 @@ app.get('/', (req, res) => {
 
 
 // Routers:
-app.use("/api", userRouter)
+
 app.use("/auth", auth_router)
+app.use("/api", userRouter)
+app.use("/camion", camionRouter)
+
+//TODO: ERROR HANDLAING
+//TODO:SWAGGER:
+//TODO: IMPLIMENTATION SCHEMAS
 
 
 

@@ -87,7 +87,7 @@ async function register_user(req, res){
 function check_auth(req, res){
     const  token =  req.cookies.access_token;
     console.log(token)
-    console.log(req.cookies)
+    console.log(req.cookies)    
     if (!token) {
         console.log(token)
         return res.status(401).json({
