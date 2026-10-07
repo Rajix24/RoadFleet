@@ -177,6 +177,47 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Tire'
+    Remorque:
+      type: object
+      required:
+        - registrationNumber
+        - brand
+        - model
+        - acquisitionDate
+      properties:
+        _id:
+          type: string
+          format: objectId
+        registrationNumber:
+          type: string
+        brand:
+          type: string
+        model:
+          type: string
+        status:
+          type: string
+          enum: [available, in_use, maintenance, out_of_service]
+          default: available
+        acquisitionDate:
+          type: string
+          format: date-time
+        camion:
+          type: string
+          nullable: true
+          description: MongoDB id of the truck pulling this trailer
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    RemorqueList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Remorque'
     securitySchemes:
       BearerAuth:
       type: http
@@ -184,6 +225,78 @@ components:
       bearerFormat: JWT
 
 paths:
+  /remorques:
+    get:
+      tags: [Remorques]
+      summary: List remorques
+      responses:
+        "200":
+          description: Remorques retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RemorqueList'
+    post:
+      tags: [Remorques]
+      summary: Create a remorque
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Remorque'
+      responses:
+        "201":
+          description: Remorque created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Remorque'
+        "400":
+          description: Invalid remorque data or duplicate registration number
+  /remorques/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: objectId
+    get:
+      tags: [Remorques]
+      summary: Get a remorque by id
+      responses:
+        "200":
+          description: Remorque retrieved successfully
+        "404":
+          description: Remorque not found
+    put:
+      tags: [Remorques]
+      summary: Update a remorque
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Remorque'
+      responses:
+        "200":
+          description: Remorque updated successfully
+        "400":
+          description: Invalid remorque data
+        "404":
+          description: Remorque not found
+    delete:
+      tags: [Remorques]
+      summary: Delete a remorque
+      responses:
+        "200":
+          description: Remorque deleted successfully
+        "404":
+          description: Remorque not found
   /tires:
     get:
       tags: [Tires]
