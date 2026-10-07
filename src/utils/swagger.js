@@ -5,22 +5,13 @@ const YAML = require("yaml")
 const path = require("path")
 
 
-// const loadFile = fs.readFileSync(`${__dirname. ../../swagger.yml}`)
+const swaggerPath = path.join(__dirname, "../../swagger.yml")
+const file = fs.readFileSync(swaggerPath, "utf-8")
 
-
-
-
+const swaggerDoc = YAML.parse(file)
 
 const options = {
-    definition: {
-        openapi: "3.0.0",
-        info: {
-            title: "Application Backend",
-            version: "1.0.0",
-            description: "Application backend for transport goods"
-        }
-    },
-
+    definition: swaggerDoc,
     apis: [
         "./src/routes/*.js"
     ]
@@ -30,6 +21,7 @@ const swaggerSpec = swaggerJsdoc(options);
 
 
 module.exports = (app) => {
-app.use('/api-docs', swaggerUi.serve , swaggerUi.setup(swaggerSpec)) 
+app.use('/api', swaggerUi.serve , swaggerUi.setup(swaggerSpec)) 
 }
 
+    

@@ -45,10 +45,12 @@ class CamionController {
     }
 
     deleteCamion = async (req, res) =>{
-        res.status(200).json({
-            message: "delete function",
-            req: req.params
-        })
+       try{
+            const result = await CamionService.deleteCamion(req.params)
+            
+       }catch(error){
+        
+       }
     }
 }
 module.exports = new CamionController()

@@ -34,6 +34,15 @@ class CamionService {
             throw error;
         }
     }
+    async deleteCamion(params){
+        try{
+            const result = await CamionRepository.delte(params)
+            return result;
+        }catch(error){
+            console.log(error)
+            throw new Error(error) 
+        }
+    }
 }
 
 

@@ -6,22 +6,7 @@ const  roleMiddleware  = require("../middlewares/role.middleware")
 
 
 
-/**
- * @swagger
- * /api/users:
- *   get:
- *     tags:
- *       - Users
- *     summary: Retrieve a list of users
- *     description: Retrieve all users. Only administrators can access this endpoint.
- *     responses:
- *       200:
- *         description: A list of users.
- *       401:
- *         description: User is not authenticated.
- *       403:
- *         description: User is not authorized.
- */
+// 
 route.get("/users",auth_middleware, roleMiddleware("chauffeur"), UserController.getAll)
 
 /**

@@ -1,10 +1,12 @@
 const CamionModel = require('../models/camion.model')
+// Register the Tire model before Mongoose populates the Camion.tires virtual.
+require('../models/tire.model')
 
 
 class CamionRepository{
     async getAllCamions(){
         try{
-            const camions = await CamionModel.find()
+            const camions = await CamionModel.find().populate('tires')
             return camions
         }catch(error){
             throw new Error(error)
@@ -14,9 +16,9 @@ class CamionRepository{
     async createCamion(data){
         try{
             const {incomming_number} = data
-            const find_camion = CamionModel.find({number: incomming_number})
+            const find_camion = await CamionModel.find({number: incomming_number})
             if(!find_camion) throw new Error("Camion has beed registed")
-            const new_camion = CamionModel.create(data)
+            const new_camion = await CamionModel.create(data)
             return new_camion;
         }catch(error){
             console.log(error)
@@ -25,15 +27,24 @@ class CamionRepository{
     }
     async edit(params , data) {
         try{
-            const old_camion = CamionModel.find({number: params})
+            const old_camion = await CamionModel.find({number: params})
             if(!old_camion) {
                 const error = new Error("can not find the camion")
                 throw error
             } 
-            const result = CamionModel.findOneAndUpdate({number:params}, {$set: data})
+            const result = await CamionModel.findOneAndUpdate({number:params}, {$set: data})
             console.log(result)
             return result;
         }catch(error){
+            throw error;
+        }
+    }
+    async delete(params){
+        try{
+            const result = await CamionModel.deleteOne({number: params})
+            return result;
+        }catch(error){
+            console.log(error)
             throw error;
         }
     }

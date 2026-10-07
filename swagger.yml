@@ -7,13 +7,13 @@ info:
 
 host: http://locahost:2000
 basePath: /v1
-schemes:
-  - http
+# schemes:
+#   - http
 components:
   schemas:
     Message:
       type: object
-      properties:
+      properties: 
         message:
           type: string
 
@@ -35,6 +35,55 @@ components:
         updated_at:
           type: string
           format: date-time
+        tires:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tire'
+
+
+    RegisterRequest:
+      type: object
+      required:
+        - first_name
+        - last_name
+        - email
+        - password
+      properties:
+        first_name:
+          type: string
+          example: Younes
+
+        last_name:
+          type: string
+          example: Raji
+
+        email:
+          type: string
+          format: email
+          example: younes@example.com
+
+        password:
+          type: string
+          format: password
+          minLength: 8
+          example: password123
+
+
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          example: younes@example.com
+
+        password:
+          type: string
+          format: password
+          example: password123
 
     UserList:
       type: object
@@ -43,9 +92,290 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/User'
+    
+    Camion:
+      type: object
+      properties:
+        id: 
+          type: integer
+          format: int64
+        number:
+          type: integer
+          format: int64
+        brand:
+          type: string
+        model:
+          type: string
+        vehicleStatus:
+          type: string
+          enum:
+            - available
+            - in_use
+            - maintenance
+            - out_of_service
+          default: available
+        acquisitionDate: 
+          type: string
+          format: date-time
+        isArchived:
+          type: Boolean
+          default: false
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    ListCamions:
+      type: object
+      properties:
+        camions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Camion' 
+    Tire:
+      type: object
+      required:
+        - serialNumber
+        - brand
+        - size
+        - purchaseDate
+      properties:
+        _id:
+          type: string
+          format: objectId
+        serialNumber:
+          type: string
+        brand:
+          type: string
+        size:
+          type: string
+        status:
+          type: string
+          enum: [in_stock, mounted, worn, retired]
+          default: in_stock
+        purchaseDate:
+          type: string
+          format: date-time
+        price:
+          type: number
+          minimum: 0
+        camion:
+          type: string
+          nullable: true
+          description: MongoDB id of the truck this tire is mounted on
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    TireList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tire'
+    securitySchemes:
+      BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
 
-# paths:
-#   /api/users:
+paths:
+  /tires:
+    get:
+      tags: [Tires]
+      summary: List tires
+      responses:
+        "200":
+          description: Tires retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TireList'
+    post:
+      tags: [Tires]
+      summary: Create a tire
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Tire'
+      responses:
+        "201":
+          description: Tire created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Tire'
+        "400":
+          description: Invalid tire data or duplicate serial number
+  /tires/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: objectId
+    get:
+      tags: [Tires]
+      summary: Get a tire by id
+      responses:
+        "200":
+          description: Tire retrieved successfully
+        "404":
+          description: Tire not found
+    put:
+      tags: [Tires]
+      summary: Update a tire
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Tire'
+      responses:
+        "200":
+          description: Tire updated successfully
+        "400":
+          description: Invalid tire data
+        "404":
+          description: Tire not found
+    delete:
+      tags: [Tires]
+      summary: Delete a tire
+      responses:
+        "200":
+          description: Tire deleted successfully
+        "404":
+          description: Tire not found
+  /camion/:
+    get:
+      tags:
+        - Camion
+      summary: Camions List
+      consumes:
+        - application/json
+      description: "API return list camion the company currently have "
+      responses:
+        "200":
+          description: "successful operation"
+          content:     
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListCamions' 
+    post: 
+      tags:
+        - Camion
+      summary: create camion 
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Camion'
+      responses:
+        "201":
+          description: "camion has been created"
+          content:
+            message: user has been created 
+            application/json:
+              schema:
+              $ref: '#/components/schemas/Camion'
+        "400":
+          description: Invalide camion data 
+  /api/users:
+    get:
+      tags:
+        - Users
+      summary: Get all users
+      description: Get all users in the application
+
+      security:
+        - bearerAuth: []
+
+      responses:
+        "200":
+          description: Users retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserList"
+
+        "401":
+          description: User is not authenticated
+
+        "403":
+          description: User is not authorized
+  /auth/register:
+      post:
+        tags:
+          - Auth
+        summary: Register a new user
+        description: Create a new user account
+
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegisterRequest"
+
+        responses:
+          "201":
+            description: User registered successfully
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      example: User registered successfully
+                    user:
+                      $ref: "#/components/schemas/User"
+
+          "400":
+            description: Invalid data or user already exists
+  /auth/login:
+    post:
+      tags:
+        - Auth
+      summary: Login user
+      description: Authenticate a user and generate a JWT access token
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Login successful
+                  access_token:
+                    type: string
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+        "401":
+          description: Invalid email or password
+        #   /api/users: 
 #     get:
 #       tags:
 #         - Users
@@ -60,17 +390,67 @@ components:
 #             application/json:
 #               schema:
 #                 $ref: '#/components/schemas/UserList'
-paths:
-  /api/users:
-    get:
-      tags: 
-        - Users
-      summary: "List Users"
-      description: "List users that are active in the application"
-      responses:
-        "200":
-          description: Successful operation
-      content:
-        application/json:
-          schema:
-          $ref: '#/components/schemas/UserList'
+
+
+
+
+
+
+
+#   {
+#     number:{
+#         type:String,
+#         required: true,
+#         unique: true,
+#         trim: true 
+
+#     },
+#     brand: {
+#       type: String,
+#       required: true,
+#       trim: true
+#     },
+
+#     model: {
+#       type: String,
+#       required: true,
+#       trim: true
+#     },
+
+#     vehicleStatus: {
+#       type: String,
+#       enum: ["available", "in_use", "maintenance", "out_of_service"],
+#       default: "available",
+#       required: true
+#     },
+
+#     acquisitionDate: {
+#       type: Date,
+#       required: true
+#     },
+
+#     isArchived: {
+#       type: Boolean,
+#       default: false
+#     }
+#   },
+#   {
+#     timestamps: true
+#   }
+# )
+# paths:
+
+  # /api/users:
+  #   get:
+  #     tags: 
+  #       - Users
+  #     summary: "List Users"
+  #     description: "List users that are active in the application"
+  #     responses:
+  #       "200":
+  #         description: Successful operation
+  #     content:
+  #       application/json:
+  #         schema:
+  #         $ref: '#/components/schemas/UserList'
+  

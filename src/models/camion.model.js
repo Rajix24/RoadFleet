@@ -39,8 +39,16 @@ const CamionSchema = new mongo.Schema(
     }
   },
   {
-    timestamps: true
+    timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
   }
 )
+
+CamionSchema.virtual("tires", {
+  ref: "Tire",
+  localField: "_id",
+  foreignField: "camion"
+})
 
 module.exports = new mongo.model("Camion", CamionSchema)

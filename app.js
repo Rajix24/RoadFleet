@@ -2,6 +2,7 @@ const express = require('express')
 const mongoose = require('mongoose')
 const userRouter = require("./src/routes/user.route")
 const camionRouter = require("./src/routes/camion.route")
+const tireRouter = require("./src/routes/tire.route")
 // const path = require("path")
 const auth_router = require("./src/routes/auth.router")
 const cookieParser = require("cookie-parser")
@@ -38,6 +39,7 @@ app.get('/', (req, res) => {
 app.use("/auth", auth_router)
 app.use("/api", userRouter)
 app.use("/camion", camionRouter)
+app.use("/tires", tireRouter)
 
 //TODO: ERROR HANDLAING
 //TODO:SWAGGER:
