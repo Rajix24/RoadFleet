@@ -36,11 +36,20 @@ class CamionService {
     }
     async deleteCamion(params){
         try{
-            const result = await CamionRepository.delte(params)
+            const result = await CamionRepository.delete(params)
             return result;
         }catch(error){
             console.log(error)
             throw new Error(error) 
+        }
+    }
+    availbleCamions = async (req, res)=>{
+        try{
+            const availbleCamion = await CamionRepository.availble()
+            return availbleCamion
+        }catch(error){
+            console.log(error)
+            throw error
         }
     }
 }

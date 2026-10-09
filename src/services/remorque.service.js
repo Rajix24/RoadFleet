@@ -38,6 +38,15 @@ class RemorqueService {
     }
     return remorque
   }
+  async avaible() {
+    const remorque = await RemorqueRepository.avaibleRemorque({status: "available"})
+    if (!remorque) {
+      const error = new Error("Remorque not found")
+      error.status = 404
+      throw error
+    }
+    return remorque
+  }
 }
 
 module.exports = new RemorqueService()

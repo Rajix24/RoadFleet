@@ -9,8 +9,9 @@ const tireSchema = new mongoose.Schema(
       type: String,
       enum: ["in_stock", "mounted", "worn", "retired"],
       default: "in_stock",
-      required: true
+    required: true
     },
+    DateOfDeath: {type: Date, required:true},
     purchaseDate: { type: Date, required: true },
     price: { type: Number, min: 0 },
     camion: { type: mongoose.Schema.Types.ObjectId, ref: "Camion", default: null }

@@ -5,6 +5,7 @@ const createTireValidator = [
   body("brand").isString().trim().notEmpty().withMessage("Brand is required"),
   body("size").isString().trim().notEmpty().withMessage("Size is required"),
   body("status").optional().isIn(["in_stock", "mounted", "worn", "retired"]),
+  body("DateOfDeath").isISO8601().withMessage("Date of death must be a valid date"),
   body("purchaseDate").isISO8601().withMessage("Purchase date must be a valid date"),
   body("price").optional().isFloat({ min: 0 }).withMessage("Price must be zero or greater"),
   body("camion").optional({ values: "null" }).isMongoId().withMessage("Camion must be a valid id")

@@ -4,6 +4,9 @@ const userRouter = require("./src/routes/user.route")
 const camionRouter = require("./src/routes/camion.route")
 const tireRouter = require("./src/routes/tire.route")
 const remorqueRouter = require("./src/routes/remorque.route")
+const trajetRouter = require("./src/routes/trajet.router")
+const maintenanceRouter = require("./src/routes/maintenance.router")
+const assigneRouter = require('./src/routes/assigne.router')
 // const path = require("path")
 const auth_router = require("./src/routes/auth.router")
 const cookieParser = require("cookie-parser")
@@ -42,6 +45,9 @@ app.use("/api", userRouter)
 app.use("/camion", camionRouter)
 app.use("/tires", tireRouter)
 app.use("/remorques", remorqueRouter)
+app.use('/trajet', trajetRouter)
+app.use('/maintenance', maintenanceRouter)
+app.use('/assigne', assigneRouter)
 
 //TODO: ERROR HANDLAING
 //TODO:SWAGGER:
@@ -51,7 +57,7 @@ app.use("/remorques", remorqueRouter)
 
 mongoose.connect(mongoseURL).then(()=>{
     console.log("Database is connect seccfully")
-    app.listen(port, ()=>{
+app.listen(port, ()=>{
         console.log(`serveur is runing on ${port}`)
     })
 

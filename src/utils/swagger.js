@@ -9,7 +9,7 @@ const swaggerPath = path.join(__dirname, "../../swagger.yml")
 const file = fs.readFileSync(swaggerPath, "utf-8")
 
 const swaggerDoc = YAML.parse(file)
-
+// console.log(swaggerDoc)
 const options = {
     definition: swaggerDoc,
     apis: [
@@ -24,4 +24,3 @@ module.exports = (app) => {
 app.use('/api', swaggerUi.serve , swaggerUi.setup(swaggerSpec)) 
 }
 
-    

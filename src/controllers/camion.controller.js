@@ -47,9 +47,16 @@ class CamionController {
     deleteCamion = async (req, res) =>{
        try{
             const result = await CamionService.deleteCamion(req.params)
-            
+            res.status(201).json({
+                massage: "camion has been delete", 
+                response: result 
+            })
        }catch(error){
-        
+        console.log(error)
+        res.status(500).json({
+            message: "error in server",
+            error: error
+        })
        }
     }
 }

@@ -38,6 +38,15 @@ class UserService{
             throw new Error(error)
         }
     }
+    async available(){
+        try {
+            const result = await this.UserRepository.available()
+            return result;
+        }catch(error){
+            console.log(error)
+            throw new Error(error)
+        }
+    }
 }
 
 module.exports = new UserService();

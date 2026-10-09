@@ -36,7 +36,7 @@ const CamionSchema = new mongo.Schema(
     isArchived: {
       type: Boolean,
       default: false
-    }
+    }, 
   },
   {
     timestamps: true,

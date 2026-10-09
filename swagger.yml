@@ -154,6 +154,9 @@ components:
           type: string
           enum: [in_stock, mounted, worn, retired]
           default: in_stock
+        DateOfDeath:
+          type: string
+          format: date-time
         purchaseDate:
           type: string
           format: date-time
@@ -218,6 +221,151 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Remorque'
+    Trajet:
+      type: object
+      required:
+        - departureSite
+        - arrivalSite
+        - merchandise
+        - plannedDeparture
+        - plannedArrival
+        - chauffeur
+        - camion
+        - remorque
+      properties:
+        _id:
+          type: string
+          format: objectId
+          readOnly: true
+        departureSite:
+          type: string
+        arrivalSite:
+          type: string
+        merchandise:
+          type: string
+        plannedDeparture:
+          type: string
+          format: date-time
+        plannedArrival:
+          type: string
+          format: date-time
+        chauffeur:
+          description: Chauffeur MongoDB id on creation; populated chauffeur object in list responses
+          oneOf:
+            - type: string
+              format: objectId
+            - $ref: '#/components/schemas/User'
+        camion:
+          description: Camion MongoDB id on creation; populated camion object in list responses
+          oneOf:
+            - type: string
+              format: objectId
+            - $ref: '#/components/schemas/Camion'
+        remorque:
+          description: Remorque MongoDB id on creation; populated remorque object in list responses
+          oneOf:
+            - type: string
+              format: objectId
+            - $ref: '#/components/schemas/Remorque'
+        status:
+          type: string
+          enum: [a_faire, en_cours, termine]
+          default: a_faire
+        kilometrageDepart:
+          type: number
+          minimum: 0
+        kilometrageArrivee:
+          type: number
+          minimum: 0
+        distance:
+          type: number
+          minimum: 0
+        gasoilVolume:
+          type: number
+          minimum: 0
+        consommationMoyenne:
+          type: number
+          minimum: 0
+        remarque:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+          readOnly: true
+        updatedAt:
+          type: string
+          format: date-time
+          readOnly: true
+    TrajetList:
+      type: object
+      properties:
+        message:
+          type: string
+          example: seccussful operation
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Trajet'
+    Maintenance:
+      type: object
+      required:
+        - vehicle
+        - type
+        - description
+        - maintenanceDate
+        - mileage
+        - cost
+      properties:
+        _id:
+          type: string
+          format: objectId
+          readOnly: true
+        vehicle:
+          type: string
+          format: objectId
+          description: MongoDB id of the truck being maintained
+        type:
+          type: string
+          enum: [vidange, revision, reparation, pneus, freins, autre]
+        description:
+          type: string
+        maintenanceDate:
+          type: string
+          format: date-time
+        mileage:
+          type: number
+          minimum: 0
+        cost:
+          type: number
+          minimum: 0
+        status:
+          type: string
+          enum: [planned, in_progress, completed, cancelled]
+          default: planned
+        nextMaintenanceDate:
+          type: string
+          format: date-time
+        nextMaintenanceMileage:
+          type: number
+          minimum: 0
+        createdAt:
+          type: string
+          format: date-time
+          readOnly: true
+        updatedAt:
+          type: string
+          format: date-time
+          readOnly: true
+    MaintenanceList:
+      type: object
+      properties:
+        message:
+          type: string
+          example: operation done
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Maintenance'
     securitySchemes:
       BearerAuth:
       type: http
@@ -225,6 +373,107 @@ components:
       bearerFormat: JWT
 
 paths:
+  /maintenance:
+    get:
+      tags: [Maintenance]
+      summary: List maintenance records
+      responses:
+        "200":
+          description: Maintenance records retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MaintenanceList'
+        "500":
+          description: Failed to retrieve maintenance records
+    post:
+      tags: [Maintenance]
+      summary: Create a maintenance record
+      description: The vehicle field must contain the MongoDB id of an existing truck.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Maintenance'
+            example:
+              vehicle: 507f1f77bcf86cd799439012
+              type: vidange
+              description: Oil change
+              maintenanceDate: '2026-10-08T10:00:00.000Z'
+              mileage: 12000
+              cost: 500
+              status: planned
+              nextMaintenanceDate: '2027-04-08T10:00:00.000Z'
+              nextMaintenanceMileage: 22000
+      responses:
+        "201":
+          description: Maintenance record created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: operation is done
+                  data:
+                    $ref: '#/components/schemas/Maintenance'
+        "400":
+          description: Invalid maintenance data
+        "500":
+          description: Failed to create maintenance record
+  /trajet:
+    get:
+      tags: [Trajets]
+      summary: List trajet records
+      description: Returns trajet records with chauffeur, camion, and remorque populated.
+      responses:
+        "200":
+          description: Trajets retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrajetList'
+        "400":
+          description: Could not retrieve trajets
+    post:
+      tags: [Trajets]
+      summary: Register a trajet
+      description: Creates a trajet using the MongoDB ids of an existing chauffeur, camion, and remorque.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Trajet'
+            example:
+              departureSite: Casablanca
+              arrivalSite: Rabat
+              merchandise: General cargo
+              plannedDeparture: '2026-10-08T08:00:00.000Z'
+              plannedArrival: '2026-10-08T11:00:00.000Z'
+              chauffeur: 507f1f77bcf86cd799439011
+              camion: 507f1f77bcf86cd799439012
+              remorque: 507f1f77bcf86cd799439013
+              status: a_faire
+      responses:
+        "201":
+          description: Trajet created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Trajet created successfully
+                  data:
+                    $ref: '#/components/schemas/Trajet'
+        "400":
+          description: Invalid trajet data or duplicate record
+        "500":
+          description: Could not create trajet
   /remorques:
     get:
       tags: [Remorques]

@@ -20,8 +20,12 @@ class RemorqueRepository {
     }).populate("camion")
   }
 
-  delete(id) {
-    return Remorque.findByIdAndDelete(id)
+    delete(id) {
+      return Remorque.findByIdAndDelete(id)
+    }
+
+  avaibleRemorque(){
+    return Remorque.find({status: "available"})
   }
 }
 

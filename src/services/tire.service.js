@@ -15,8 +15,8 @@ class TireService {
     return tire
   }
 
-  create(data) {
-    return TireRepository.create(data)
+  async  create(data) {
+    return  await TireRepository.create(data)
   }
 
   async update(id, data) {

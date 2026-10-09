@@ -48,5 +48,16 @@ class CamionRepository{
             throw error;
         }
     }
+
+
+    async availble(){
+        try{
+            const result = await CamionModel.find({vehicleStatus: "available", isArchived: false})
+            return result;
+        }catch(error){
+            console.log(error)
+            throw error;
+        }
+    }
 }
 module.exports = new CamionRepository()

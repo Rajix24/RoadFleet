@@ -24,6 +24,14 @@ class UserRepository{
     async deleteByEmail(email){
         return await User.deleteOne({email: email})
     }
+    async available(){
+        try{
+            return await User.find({isActive: false, role: "chauffeur"})
+        }catch(error){
+            console.log(error)
+            throw error
+        }
+    }
 }
 
 
