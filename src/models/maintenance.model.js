@@ -2,10 +2,18 @@ const mongoose = require("mongoose");
 
 const maintenanceSchema = new mongoose.Schema(
   {
+    camion: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Camion"
+    },
+    remorque: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Remorque"
+    },
+    // Backward compatibility for existing maintenance records and API clients.
     vehicle: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Camion",
-      required: true
+      ref: "Camion"
     },
 
     type: {
@@ -56,5 +64,20 @@ const maintenanceSchema = new mongoose.Schema(
     timestamps: true
   }
 );
+
+maintenanceSchema.pre("validate", function () {
+  if (this.vehicle && !this.camion) this.camion = this.vehicle
+  if (this.camion && !this.vehicle) this.vehicle = this.camion
+
+  const hasCamion = Boolean(this.camion)
+  const hasRemorque = Boolean(this.remorque)
+  if (hasCamion === hasRemorque) {
+    this.invalidate("camion", "Select exactly one asset: camion or remorque")
+    this.invalidate("remorque", "Select exactly one asset: camion or remorque")
+  }
+})
+
+maintenanceSchema.index({ camion: 1, status: 1, nextMaintenanceDate: 1 })
+maintenanceSchema.index({ remorque: 1, status: 1, nextMaintenanceDate: 1 })
 
 module.exports = mongoose.model("Maintenance", maintenanceSchema);

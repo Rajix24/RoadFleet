@@ -28,7 +28,7 @@ class maintenanceController{
 
         }catch(error){
             console.log(error)
-            const status = error.name === "ValidationError" || error.code === 11000 ? 400 : 500
+            const status = error.status || (error.name === "ValidationError" || error.code === 11000 ? 400 : 500)
             res.status(status).json({
                 message: "Could not create maintenance",
                 error: error.message

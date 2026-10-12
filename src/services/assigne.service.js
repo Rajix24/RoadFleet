@@ -1,6 +1,7 @@
 const CamionService = require("./camion.service")
 const UserService = require("./user.service")
 const remorqueService = require("./remorque.service")
+const assigneRepository = require("../repository/assigne.repository")
 
 
 
@@ -19,8 +20,18 @@ class assigneService{
         })
     }
 
-    AssigneChauffeur = async (req, res){
+    assign = async (data) => {
+        if (new Date(data.plannedArrival) <= new Date(data.plannedDeparture)) {
+            const error = new Error("Planned arrival must be after planned departure")
+            error.status = 400
+            throw error
+        }
+        return assigneRepository.create(data)
+    }
 
+    update = async (data) => {
+        // if(data.)
+        return data;
     }
 
 }

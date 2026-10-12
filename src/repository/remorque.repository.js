@@ -1,4 +1,5 @@
 const Remorque = require("../models/remorque.model")
+const MaintenanceRepository = require("./maintenance.repository")
 
 class RemorqueRepository {
   findAll() {
@@ -25,7 +26,8 @@ class RemorqueRepository {
     }
 
   avaibleRemorque(){
-    return Remorque.find({status: "available"})
+    return MaintenanceRepository.syncAssetStatuses()
+      .then(() => Remorque.find({status: "available"}))
   }
 }
 

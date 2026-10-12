@@ -1,4 +1,5 @@
 const CamionModel = require('../models/camion.model')
+const MaintenanceRepository = require('./maintenance.repository')
 // Register the Tire model before Mongoose populates the Camion.tires virtual.
 require('../models/tire.model')
 
@@ -52,6 +53,7 @@ class CamionRepository{
 
     async availble(){
         try{
+            await MaintenanceRepository.syncAssetStatuses()
             const result = await CamionModel.find({vehicleStatus: "available", isArchived: false})
             return result;
         }catch(error){

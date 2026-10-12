@@ -7,18 +7,10 @@ const remorqueRouter = require("./src/routes/remorque.route")
 const trajetRouter = require("./src/routes/trajet.router")
 const maintenanceRouter = require("./src/routes/maintenance.router")
 const assigneRouter = require('./src/routes/assigne.router')
-// const path = require("path")
 const auth_router = require("./src/routes/auth.router")
 const cookieParser = require("cookie-parser")
 const swagger = require("./src/utils/swagger")
 require("dotenv").config()
-
-
-
-// console.log(options.defifnition.servers)
-
-
-
 
 
 
@@ -31,15 +23,12 @@ const mongoseURL = process.env.MONGO_URL
 
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser())
-// app.use(check_auth())
-
 app.get('/', (req, res) => {
     res.status(200).json({ message: "Welcome to the Express Application API!" });
 });
 
 
-// Routers:
-
+// ROUTERS:
 app.use("/auth", auth_router)
 app.use("/api", userRouter)
 app.use("/camion", camionRouter)
@@ -48,11 +37,6 @@ app.use("/remorques", remorqueRouter)
 app.use('/trajet', trajetRouter)
 app.use('/maintenance', maintenanceRouter)
 app.use('/assigne', assigneRouter)
-
-//TODO: ERROR HANDLAING
-//TODO:SWAGGER:
-//TODO: IMPLIMENTATION SCHEMAS
-
 
 
 mongoose.connect(mongoseURL).then(()=>{

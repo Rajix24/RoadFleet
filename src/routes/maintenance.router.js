@@ -3,10 +3,8 @@ const router = express.Router()
 const maintenanceController = require("../controllers/maintenance.controller")
 
 
-// router.get('/', maintenanceController.getAllMaintenance)
-// router.post('/', maintenanceController.createMaintenance)
-// router.get('/available', maintenanceController.available)
-// router.
+router.get('/', maintenanceController.getAllMaintenance)
+router.post('/', maintenanceController.createMaintenance)
 
 module.exports = router
 
