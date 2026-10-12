@@ -46,16 +46,9 @@ const trajetSchema = new mongoose.Schema(
       enum: ["a_faire", "en_cours", "termine"],
       default: "a_faire"
     },
-    kilometrageDepart: {
-      type: Number,
-      min: 0
-    },
-    kilometrageArrivee: {
-      type: Number,
-      min: 0
-    },
     distance: {
       type: Number,
+      required: true,
       min: 0
     },
     gasoilVolume: {

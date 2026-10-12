@@ -7,7 +7,6 @@ const MaintenanceRepository = require("./maintenance.repository")
 class AssigneRepository {
   async create(data) {
     const claimed = { chauffeur: false, camion: false, remorque: false }
-
     try {
       await MaintenanceRepository.syncAssetStatuses()
 
@@ -16,7 +15,6 @@ class AssigneRepository {
         { $set: { isActive: true } },
         { new: true }
       )
-      console.log(chauffeur)
       if (!chauffeur) throw this.unavailable("Chauffeur")
       claimed.chauffeur = true
 
@@ -37,6 +35,8 @@ class AssigneRepository {
       claimed.remorque = true
 
       const trajet = await Trajet.create(data)
+      console.log(trajet.camion.consommation)
+      
       return trajet.populate([
         { path: "chauffeur", select: "first_name last_name email role" },
         { path: "camion" },

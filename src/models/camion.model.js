@@ -20,6 +20,10 @@ const CamionSchema = new mongo.Schema(
       required: true,
       trim: true
     },
+    consommation: {
+      type: Number,
+      required: true 
+    },
 
     vehicleStatus: {
       type: String,
