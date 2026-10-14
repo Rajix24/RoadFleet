@@ -79,8 +79,6 @@ class maintenanceRepository{
             throw error
         }
     }
-
-
 }
 
 module.exports = new maintenanceRepository()

@@ -10,13 +10,16 @@ const assigneRouter = require('./src/routes/assigne.router')
 const auth_router = require("./src/routes/auth.router")
 const cookieParser = require("cookie-parser")
 const swagger = require("./src/utils/swagger")
+const analyseRouter = require('./src/routes/analyse.router')
+const rateLimiter = require('./src/utils/rate_limiting')
+
 require("dotenv").config()
 
-
+express
 
 const app = express()
 app.use(express.json())
-
+app.use(rateLimiter)
 const port = process.env.BACKEND_PORT
 const mongoseURL = process.env.MONGO_URL
 
@@ -37,6 +40,10 @@ app.use("/remorques", remorqueRouter)
 app.use('/trajet', trajetRouter)
 app.use('/maintenance', maintenanceRouter)
 app.use('/assigne', assigneRouter)
+
+
+// V2:
+app.use('/api/v2/analytics/', analyseRouter)
 
 
 mongoose.connect(mongoseURL).then(()=>{

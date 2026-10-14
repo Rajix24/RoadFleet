@@ -27,7 +27,6 @@ const trajetSchema = new mongoose.Schema(
     },
     chauffeur: {
       type: mongoose.Schema.Types.ObjectId,
-      // The registered model is named "Users" in src/models/user.model.js.
       ref: "Users",
       required: true
     },
@@ -52,10 +51,7 @@ const trajetSchema = new mongoose.Schema(
       min: 0
     },
     gasoilVolume: {
-      type: Number,
-      min: 0
-    },
-    consommationMoyenne: {
+      required: true,
       type: Number,
       min: 0
     },
