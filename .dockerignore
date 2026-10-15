@@ -1,2 +1,5 @@
-node_module
-.git 
+node_modules
+.git
+.dockerignore
+.env
+.gitignore
