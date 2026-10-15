@@ -5,10 +5,6 @@ class analyseRepository{
     totalCamions = async () => {
 
         //TODO: I NEED GET TOTAL OF CONSOMATION OF ONE USER THAT PASS THE TRAJET
-
-
-
-        
         //TODO: I NEED TO GET TOTAL OF DISTANCE THAT ONE USER HAS  
 
 
