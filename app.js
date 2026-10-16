@@ -1,3 +1,5 @@
+require("dotenv").config()
+
 const express = require('express')
 const mongoose = require('mongoose')
 const userRouter = require("./src/routes/user.route")
@@ -11,16 +13,12 @@ const auth_router = require("./src/routes/auth.router")
 const cookieParser = require("cookie-parser")
 const swagger = require("./src/utils/swagger")
 const analyseRouter = require('./src/routes/analyse.router')
-const rateLimiter = require('./src/utils/rate_limiting')
-
-require("dotenv").config()
-
-express
+const {limiter, clientReady} = require('./src/utils/rate_limiting')
 
 const app = express()
 app.use(express.json())
-app.use(rateLimiter)
-const port = process.env.BACKEND_PORT
+app.use(limiter)
+const port = process.env.BACKEND_PORT || 3000
 const mongoseURL = process.env.MONGO_URL
 
 
@@ -46,14 +44,25 @@ app.use('/assigne', assigneRouter)
 app.use('/api/v2/analytics/', analyseRouter)
 
 
-mongoose.connect(mongoseURL).then(()=>{
-    console.log("Database is connect seccfully")
-app.listen(port, ()=>{
-        console.log(`serveur is runing on ${port}`)
-    })
+// mongoose.connect(mongoseURL).then(()=>{
+//     console.log("Database is connect seccfully")
+// app.listen(port, ()=>{
+//         console.log(`serveur is runing on ${port}`)
+//     })
 
-}).catch((error) =>{
-    console.log("error in connect to Database")
-})
+// })
 
+
+async function startServer() {
+    try {
+        await clientReady;
+        await mongoose.connect(mongoseURL);
+        console.log("Database is connect seccfully")
+        app.listen(port, ()=>{console.log(`serveur is runing on ${port}`)})
+    } catch (error) {
+        console.error('Failed to start application:', error);
+        process.exit(1);
+    }
+}
+startServer()
 swagger(app)
