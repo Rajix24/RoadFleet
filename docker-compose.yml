@@ -1,7 +1,7 @@
 
 services:
   mongodb:
-    image: mongo:8
+    image: mongo:latest  
     container_name: mongodb
     restart: unless-stopped
     ports:
@@ -24,19 +24,22 @@ services:
       retries: 5
 
   redis_cache:
-    image: redis:7-alpine
+    image: redis:8-alpine
     container_name: redis_cache
     restart: unless-stopped
     ports:
       - "6379:6379"
     environment:
+      REDIS_HOST: redis_cache
+      REDIS_PORT: 6379
       REDIS_PASSWORD: ${REDIS_PASSWORD}
+      REDIS_URL: redis://default:${REDIS_PASSWORD}@redis_cache:6379
     command:
       [
         "redis-server",
         "--maxmemory", "256mb",
         "--maxmemory-policy", "allkeys-lru",
-        "--requirepass", "${REDIS_PASSWORD}"
+        "--requirepass", "${REDIS_PASSWORD:?Set REDIS_PASSWORD in .env}"
       ]
     volumes:
       - redis_data:/data
@@ -65,7 +68,7 @@ services:
       MONGO_URL: ${MONGO_URL}
       REDIS_HOST: redis_cache
       REDIS_PORT: 6379
-      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      REDIS_PASSWORD: ${REDIS_PASSWORD:?Set REDIS_PASSWORD in .env}
     depends_on:
       mongodb:
         condition: service_healthy
