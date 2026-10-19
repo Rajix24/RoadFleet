@@ -27,14 +27,16 @@ async function  uploadFile(req, res, next){
 async function getFile(req, res, next) {
   try {
     const url = await fileStorage.getFileUrl(req.params.key);
-
-    return res.json({
+    return res.status(200).json({
       message: "Temporary download URL generated",
       url,
-      expiresIn: 3600,
+      expiresIn: 3000,
     });
   } catch (error) {
-    next(error);
+    res.status(400).json({
+      message: "error in server in controller getfile",
+      error: error
+    })
   }
 }
 

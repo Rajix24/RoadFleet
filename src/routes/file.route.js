@@ -3,7 +3,6 @@ const router = express.Router()
 const multer = require("multer")
 const fileController = require("../controllers/file.controller")
 
-const {uploadFile,getFile,deleteFile,} = require("../controllers/file.controller");
 
 const upload = multer({
     storage: multer.memoryStorage(),
@@ -30,14 +29,7 @@ const upload = multer({
 router.post('/upload', upload.single('file'), fileController.uploadFile)
 
 
-router.get("/:key/url", async (req, res, next) => {
-  try {
-    const url = await getFile(req.params.key);
-    res.json({ url, expiresIn: 3600 });
-  } catch (error) {
-    next(error);
-  }
-});
+router.get("/:key/url", fileController.getFile);
 
     
 router.delete("/:key", async (req, res, next) => {

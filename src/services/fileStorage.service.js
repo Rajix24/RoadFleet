@@ -80,13 +80,18 @@ async function uploadFile(file){
 
 // GET FILE: 
 async function getFileUrl(key){
-    const command = new GetObjectCommand({
-        Bucket: bucket, 
-        Key: key,
-    })
-    return getSignedUrl(s3, command, {
-        expiresIn: 3000 
-    })
+    try{
+        const command = new GetObjectCommand({
+            Bucket: bucket, 
+            Key: key,
+        })
+        return getSignedUrl(s3, command, {
+            expiresIn: 3000 
+        })
+    }catch(err){
+        console.log(err)
+        throw err;
+    }
 }
 // DELETE FILE FROM THE BUCKET: 
 async function deleteFile(key){
