@@ -44,12 +44,15 @@ async function getFile(req, res, next) {
 async function deleteFile(req, res, next) {
   try {
     await fileStorage.deleteFile(req.params.key);
-
-    return res.json({
+    // if(!result) return res.status(400).json({message: "file not exist"})
+    return res.status(200).json({
       message: "File deleted successfully",
     });
   } catch (error) {
-    next(error);
+    res.status(400).json({
+      message: "error in controller deletefile",
+      error: error
+    })
   }
 }
 

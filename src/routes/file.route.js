@@ -32,14 +32,7 @@ router.post('/upload', upload.single('file'), fileController.uploadFile)
 router.get("/:key/url", fileController.getFile);
 
     
-router.delete("/:key", async (req, res, next) => {
-  try {
-    await deleteFile(req.params.key);
-    res.json({ message: "File deleted successfully" });
-  } catch (error) {
-    next(error);
-  }
-});
+router.delete("/:key", fileController.deleteFile);
 
 
 module.exports = router 

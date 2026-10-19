@@ -95,12 +95,16 @@ async function getFileUrl(key){
 }
 // DELETE FILE FROM THE BUCKET: 
 async function deleteFile(key){
-    await s3.send(
-        new DeleteObjectCommand({
-            Bucket: bucket,
-            Key:key
-        })
-    )
+    try{
+        await s3.send(
+            new DeleteObjectCommand({
+                Bucket: bucket,
+                Key:key
+            })
+        )
+    }catch(error){
+        throw new Erorr("error in level of service")
+    }
 }
 
 
