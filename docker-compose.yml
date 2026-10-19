@@ -55,6 +55,37 @@ services:
       timeout: 3s
       retries: 5
 
+  minio:
+    image: cgr.dev/chainguard/minio:latest
+    container_name: minio
+    restart: unless-stopped
+
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+
+    volumes:
+      - minio_data:/data
+
+    command: server /data --console-address ":9001"
+
+
+  # createbuckets:
+  #   image: minio/mc
+  #   depends_on:
+  #     - minio
+  #   entrypoint: >
+  #     /bin/sh -c "
+  #     /usr/bin/mc alias set myminio http://minio:9000 minio_username minio_password;
+  #     /usr/bin/mc mb myminio/miniobucket;
+  #     /usr/bin/mc policy set public myminio/miniobucket;
+  #     exit 0;
+  #     "
+
   roadfleet-api:
     build:
       context: .
@@ -83,6 +114,7 @@ services:
 volumes:
   mongodb_data:
   redis_data:
+  minio_data:
 
 networks:
   roadfleet_network:
