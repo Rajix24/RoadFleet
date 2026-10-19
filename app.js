@@ -2,6 +2,8 @@ require("dotenv").config()
 
 const express = require('express')
 const mongoose = require('mongoose')
+
+
 const userRouter = require("./src/routes/user.route")
 const camionRouter = require("./src/routes/camion.route")
 const tireRouter = require("./src/routes/tire.route")
@@ -10,10 +12,15 @@ const trajetRouter = require("./src/routes/trajet.router")
 const maintenanceRouter = require("./src/routes/maintenance.router")
 const assigneRouter = require('./src/routes/assigne.router')
 const auth_router = require("./src/routes/auth.router")
+const fileRouter = require("./src/routes/file.route")
+
+
 const cookieParser = require("cookie-parser")
 const swagger = require("./src/utils/swagger")
 const analyseRouter = require('./src/routes/analyse.router')
 const {limiter, clientReady} = require('./src/utils/rate_limiting')
+const {initializeBucket} =  require("./src/services/fileStorage.service")
+
 
 const app = express()
 app.use(express.json())
@@ -38,26 +45,26 @@ app.use("/remorques", remorqueRouter)
 app.use('/trajet', trajetRouter)
 app.use('/maintenance', maintenanceRouter)
 app.use('/assigne', assigneRouter)
-
-
 // V2:
 app.use('/api/v2/analytics/', analyseRouter)
+app.use('/file', fileRouter)
 
 
-// mongoose.connect(mongoseURL).then(()=>{
-//     console.log("Database is connect seccfully")
-// app.listen(port, ()=>{
-//         console.log(`serveur is runing on ${port}`)
-//     })
-
-// })
 
 
 async function startServer() {
     try {
-        await clientReady;
+        console.log("initializeBucket is on :")
+        await initializeBucket()
+        console.log("initializeBucket is good :")
+
+        console.log("starting rateliming ")
+        await clientReady;// that is for rate limiting 
+
+        console.log('start connection with database')
         await mongoose.connect(mongoseURL);
-        console.log("Database is connect seccfully")
+        console.log("Database is connect seccfully") 
+
         app.listen(port, ()=>{console.log(`serveur is runing on ${port}`)})
     } catch (error) {
         console.error('Failed to start application:', error);
