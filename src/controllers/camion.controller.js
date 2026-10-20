@@ -35,7 +35,7 @@ class CamionController {
     edit = async (req, res)=>{
         try{
             const result = await CamionService.editCamion(req.params.number,req.body )
-            res.status(200).json({result})
+            res.status(200).json(result)
         }catch(error){
             res.status(400).json({
                 message: "error in application", 
@@ -58,6 +58,10 @@ class CamionController {
             error: error
         })
        }
+    }
+
+    testing(a , b){
+        return a + b
     }
 }
 module.exports = new CamionController()
