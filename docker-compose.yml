@@ -1,3 +1,4 @@
+
 services:
   mongodb:
     image: mongo:latest  
@@ -6,25 +7,115 @@ services:
     ports:
       - "27017:27017"
     environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME}`
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
-    volumes: 
+    volumes:
       - mongodb_data:/data/db
     networks:
-      - mongodb_network
-    command: ["mongod", "--bind_ip_all"]
+      - roadfleet_network
     healthcheck:
-      test: 
-        - CMD
-        - mongosh
-        - 'mongodb://localhost:27017/admin'
-        - '--eval=db.runCommand({ping:1})'
+      test:
+        [
+          "CMD-SHELL",
+          "mongosh --quiet --username \"$$MONGO_INITDB_ROOT_USERNAME\" --password \"$$MONGO_INITDB_ROOT_PASSWORD\" --authenticationDatabase admin --eval \"db.adminCommand('ping').ok\""
+        ]
+      interval: 10s
       timeout: 5s
-      retries: 3
-  
+      retries: 5
+
+  redis_cache:
+    image: redis:8-alpine
+    container_name: redis_cache
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    environment:
+      REDIS_HOST: redis_cache
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      REDIS_URL: redis://default:${REDIS_PASSWORD}@redis_cache:6379
+    command:
+      [
+        "redis-server",
+        "--maxmemory", "256mb",
+        "--maxmemory-policy", "allkeys-lru",
+        "--requirepass", "${REDIS_PASSWORD:?Set REDIS_PASSWORD in .env}"
+      ]
+    volumes:
+      - redis_data:/data
+    networks:
+      - roadfleet_network
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "redis-cli -a \"$$REDIS_PASSWORD\" --no-auth-warning ping | grep -q PONG"
+        ]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  minio:
+    image: cgr.dev/chainguard/minio:latest
+    container_name: minio
+    restart: unless-stopped
+
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+
+    volumes:
+      - minio_data:/data
+
+    command: server /data --console-address ":9001"
+
+
+  # createbuckets:
+  #   image: minio/mc
+  #   depends_on:
+  #     - minio
+  #   entrypoint: >
+  #     /bin/sh -c "
+  #     /usr/bin/mc alias set myminio http://minio:9000 minio_username minio_password;
+  #     /usr/bin/mc mb myminio/miniobucket;
+  #     /usr/bin/mc policy set public myminio/miniobucket;
+  #     exit 0;
+  #     "
+
+  roadfleet-api:
+    build:
+      context: .
+      dockerfile: dockerfile
+    container_name: Roadfleet-API
+    restart: unless-stopped
+    ports:
+      - "${BACKEND_PORT:-3000}:3000"
+    environment:
+      BACKEND_PORT: 3000
+      MONGO_URL: ${MONGO_URL}
+      REDIS_HOST: redis_cache
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:?Set REDIS_PASSWORD in .env}
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      redis_cache:
+        condition: service_healthy
+    networks:
+      - roadfleet_network
+    volumes:
+      - .:/app
+      - /app/node_modules
+
 volumes:
   mongodb_data:
-    driver: local
+  redis_data:
+  minio_data:
+
 networks:
-  mongodb_network:
+  roadfleet_network:
     driver: bridge

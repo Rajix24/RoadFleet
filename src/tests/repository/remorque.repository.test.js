@@ -1,0 +1,15 @@
+const Model = require("../../models/remorque.model")
+const MaintenanceRepository = require("../../repository/maintenance.repository")
+const Repository = require("../../repository/remorque.repository")
+jest.mock("../../models/remorque.model", () => ({ find: jest.fn(), findById: jest.fn(), create: jest.fn(), findByIdAndUpdate: jest.fn(), findByIdAndDelete: jest.fn() }))
+jest.mock("../../repository/maintenance.repository", () => ({ syncAssetStatuses: jest.fn() }))
+
+describe("remorque repository", () => {
+  beforeEach(() => jest.clearAllMocks())
+  test("lists remorques with camion populated", async () => { const data = []; const query = { populate: jest.fn().mockResolvedValue(data) }; Model.find.mockReturnValue(query); await expect(Repository.findAll()).resolves.toBe(data); expect(query.populate).toHaveBeenCalledWith("camion") })
+  test("finds remorque by id with camion populated", async () => { const data = { id: "r1" }; const query = { populate: jest.fn().mockResolvedValue(data) }; Model.findById.mockReturnValue(query); await expect(Repository.findById("r1")).resolves.toBe(data); expect(Model.findById).toHaveBeenCalledWith("r1"); expect(query.populate).toHaveBeenCalledWith("camion") })
+  test("creates remorque", async () => { const input = { number: "R1" }; Model.create.mockResolvedValue(input); await expect(Repository.create(input)).resolves.toBe(input); expect(Model.create).toHaveBeenCalledWith(input) })
+  test("updates remorque and populates camion", async () => { const data = { id: "r1" }; const query = { populate: jest.fn().mockResolvedValue(data) }; Model.findByIdAndUpdate.mockReturnValue(query); await expect(Repository.update("r1", { status: "available" })).resolves.toBe(data); expect(Model.findByIdAndUpdate).toHaveBeenCalledWith("r1", { $set: { status: "available" } }, { new: true, runValidators: true }); expect(query.populate).toHaveBeenCalledWith("camion") })
+  test("deletes remorque", async () => { const data = { id: "r1" }; Model.findByIdAndDelete.mockResolvedValue(data); await expect(Repository.delete("r1")).resolves.toBe(data); expect(Model.findByIdAndDelete).toHaveBeenCalledWith("r1") })
+  test("syncs maintenance status before listing available remorques", async () => { const data = []; Model.find.mockResolvedValue(data); MaintenanceRepository.syncAssetStatuses.mockResolvedValue(); await expect(Repository.avaibleRemorque()).resolves.toBe(data); expect(MaintenanceRepository.syncAssetStatuses).toHaveBeenCalledWith(); expect(Model.find).toHaveBeenCalledWith({ status: "available" }) })
+})

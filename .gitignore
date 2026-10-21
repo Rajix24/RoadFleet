@@ -1,3 +1,5 @@
 node_modules/
 .env
 role.txt
+src/tests/rate-limit
+coverage/
