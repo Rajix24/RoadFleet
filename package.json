@@ -8,7 +8,8 @@
     "dev": "nodemon app.js",
     "seed": "node src/seeders/seed.js",
     "rate": "node src/tests/rate-limit/rate.limit.test.js",
-    "test": "jest"
+    "test": "jest",
+    "test:coverage": "npx jest --coverage"
   },
   "keywords": [],
   "type": "commonjs",
@@ -25,6 +26,7 @@
     "express-session": "^1.19.0",
     "express-validator": "^7.3.2",
     "jsonwebtoken": "^9.0.3",
+    "mongodb-memory-server": "^11.3.0",
     "mongoose": "^9.10.2",
     "multer": "^2.4.0",
     "nodemon": "^3.1.14",
@@ -34,9 +36,12 @@
     "redis-om": "^0.4.7",
     "swagger-jsdoc": "^6.3.0",
     "swagger-ui-express": "^5.0.1",
+    "winston": "^3.19.0",
+    "winston-daily-rotate-file": "^5.0.0",
     "yaml": "^2.9.1"
   },
   "devDependencies": {
+    "@shelf/jest-mongodb": "^6.0.2",
     "jest": "^30.5.2"
   }
 }

@@ -14,7 +14,6 @@ class CamionService {
     }
     async saveCamion(data){
         try{    
-
             const result = await CamionRepository.createCamion(data)
             if(result.status == 401) 
             throw new Error("some problem in registing the camion ")
