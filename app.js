@@ -20,7 +20,9 @@ const swagger = require("./src/utils/swagger")
 const analyseRouter = require('./src/routes/analyse.router')
 const {limiter, clientReady} = require('./src/utils/rate_limiting')
 const {initializeBucket} =  require("./src/services/fileStorage.service")
-
+const logger = require("./src/config/winston.createLogger")
+const requestHandler = require("./src/middlewares/request.handler.middleware")
+const errorHandler = require("./src/middlewares/errorHandler.middleware")
 
 const app = express()
 app.use(express.json())
@@ -34,6 +36,10 @@ app.use(cookieParser())
 app.get('/', (req, res) => {
     res.status(200).json({ message: "Welcome to the Express Application API!" });
 });
+
+//reqHandler
+app.use(requestHandler);
+// error handler:
 
 
 // ROUTERS:
@@ -49,8 +55,7 @@ app.use('/assigne', assigneRouter)
 app.use('/api/v2/analytics/', analyseRouter)
 app.use('/file', fileRouter)
 
-
-
+app.use(errorHandler)
 
 async function startServer() {
     try {
@@ -65,7 +70,7 @@ async function startServer() {
         await mongoose.connect(mongoseURL);
         console.log("Database is connect seccfully") 
 
-        app.listen(port, ()=>{console.log(`serveur is runing on ${port}`)})
+        app.listen(port, ()=>{logger.info(`serveur is runing on ${port}`)})
     } catch (error) {
         console.error('Failed to start application:', error);
         process.exit(1);
