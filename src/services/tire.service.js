@@ -5,6 +5,10 @@ class TireService {
     return TireRepository.findAll()
   }
 
+  getHealthMatrix() {
+    return TireRepository.getHealthMatrix()
+  }
+
   async getById(id) {
     const tire = await TireRepository.findById(id)
     if (!tire) {

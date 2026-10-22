@@ -1,30 +1,24 @@
-const User = require("../models/user.model");
-const { verify_token } = require("../utils/jwt.utils");
+const User = require("../models/user.model")
+const { verify_token } = require("../utils/jwt.utils")
 
 async function auth_middleware(req, res, next) {
-    console.log("debug")
-    const token = req.cookies.access_token;
-    if(!token){
-        res.status(401).json({
-            message : "User not auth"
-        });
-    }
-    console.log(token)
-    try{
-        const result = verify_token(req, token)
-        console.log(result)
-        const user = await User.findOne({email: result.sub})
-        console.log(user)
-        if (!user) {return res.status(401).json({message: "User not found"});        }
-        req.user = user;
-        console.log(token)
-        next()
+  const authorization = req.headers.authorization
+  const bearerToken = authorization?.startsWith("Bearer ") ? authorization.slice(7) : null
+  const token = req.cookies?.access_token || bearerToken
 
-    }catch(error){
-        console.log(error)
-        res.send(error)
-    }
+  if (!token) {
+    return res.status(401).json({ message: "User not authenticated" })
+  }
 
+  try {
+    const payload = verify_token(req, token)
+    const user = await User.findOne({ email: payload.sub })
+    if (!user) return res.status(401).json({ message: "User not found" })
+    req.user = user
+    return next()
+  } catch (error) {
+    return res.status(401).json({ message: "Invalid or expired token" })
+  }
 }
 
-module.exports = auth_middleware;
+module.exports = auth_middleware
