@@ -1,16 +1,17 @@
 const analyseRepository = require("../repository/analyse.repository")
 
-class analyseService{
-    counterCamion = async () =>{
-        try{
-            const counter = await analyseRepository.totalCamions()
-            // const counter = {user: "name testing the service"   }
-            return counter
-        }catch(error){
-            console.log(error)
-            throw new Error("error in sercive some this in repository")
-        }
+class AnalyseService {
+    ecoPerformanceByDriver = async () => {
+        return analyseRepository.ecoPerformanceByDriver()
+    }
+
+    getTripsFinancialEsg = async  (filters) => {
+        return analyseRepository.getTripsFinancialEsg(filters);
+    }
+
+    getFleetUtilizationTrends = async (filters) => {
+        return analyseRepository.getFleetUtilizationTrends(filters)
     }
 }
 
-module.exports = new analyseService()
+module.exports = new AnalyseService()

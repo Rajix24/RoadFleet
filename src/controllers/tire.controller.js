@@ -10,6 +10,15 @@ class TireController {
     }
   }
 
+  getHealthMatrix = async (req, res) => {
+    try {
+      const data = await TireService.getHealthMatrix()
+      return res.status(200).json({ success: true, data })
+    } catch (error) {
+      return this.sendError(res, error)
+    }
+  }
+
   getById = async (req, res) => {
     try {
       const tire = await TireService.getById(req.params.id)
