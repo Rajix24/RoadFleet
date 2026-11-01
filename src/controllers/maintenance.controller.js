@@ -17,6 +17,20 @@ class maintenanceController{
             })
         }
     }
+
+    getMaintenanceById = async(req, res) =>{
+        try{
+            const maintenance = await maintenanceService.getById(req.params.id)
+            return res.status(200).json({
+                message: "operation done",
+                data: maintenance
+            })
+        }catch(error){
+            console.log(error)
+            return this.sendError(res, error)
+        }
+    }
+
     createMaintenance = async (req, res)=>{
         const data = req.body
         try{
@@ -35,21 +49,40 @@ class maintenanceController{
             })
         }
     }
-    deleteMaintenance = async(req, res)=>{
+
+    updateMaintenance = async(req, res) =>{
         try{
-            const result = await maintenance.deleteMaintenance(params) 
-            res.status(200).json({
-                message: "delete maintenance",
+            const result = await maintenanceService.update(req.params.id, req.body)
+            return res.status(200).json({
+                message: "Maintenance updated successfully",
                 data: result
             })
         }catch(error){
             console.log(error)
-            res.status(400).json({
-                message: "error in delete maintenance",
-                error: error
-            })
+            return this.sendError(res, error)
         }
+    }
 
+    deleteMaintenance = async(req, res) =>{
+        try{
+            const result = await maintenanceService.deleteMaintenance(req.params.id)
+            return res.status(200).json({
+                message: "Maintenance deleted successfully",
+                data: result
+            })
+        }catch(error){
+            console.log(error)
+            return this.sendError(res, error)
+        }
+    }
+
+    getById = (req, res) => this.getMaintenanceById(req, res)
+    update = (req, res) => this.updateMaintenance(req, res)
+    delete = (req, res) => this.deleteMaintenance(req, res)
+
+    sendError(res, error){
+        const status = error.status || (error.name === "ValidationError" || error.code === 11000 ? 400 : 500)
+        return res.status(status).json({ message: error.message })
     }
 }
 module.exports = new maintenanceController()

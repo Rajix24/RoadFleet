@@ -389,7 +389,7 @@ paths:
     post:
       tags: [Maintenance]
       summary: Create a maintenance record
-      description: The vehicle field must contain the MongoDB id of an existing truck.
+      description: Provide exactly one asset id in camion (or vehicle) or remorque. The referenced asset must exist.
       requestBody:
         required: true
         content:
@@ -421,8 +421,98 @@ paths:
                     $ref: '#/components/schemas/Maintenance'
         "400":
           description: Invalid maintenance data
+        "404":
+          description: Camion or remorque not found
         "500":
           description: Failed to create maintenance record
+  /maintenance/{id}:
+    get:
+      tags: [Maintenance]
+      summary: Get a maintenance record
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: objectId
+      responses:
+        "200":
+          description: Maintenance record retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: operation done
+                  data:
+                    $ref: '#/components/schemas/Maintenance'
+        "400":
+          description: Invalid maintenance id
+        "404":
+          description: Maintenance record not found
+    put:
+      tags: [Maintenance]
+      summary: Update a maintenance record
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: objectId
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Maintenance'
+      responses:
+        "200":
+          description: Maintenance record updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Maintenance updated successfully
+                  data:
+                    $ref: '#/components/schemas/Maintenance'
+        "400":
+          description: Invalid maintenance data
+        "404":
+          description: Maintenance record, camion, or remorque not found
+    delete:
+      tags: [Maintenance]
+      summary: Delete a maintenance record
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: objectId
+      responses:
+        "200":
+          description: Maintenance record deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Maintenance deleted successfully
+                  data:
+                    $ref: '#/components/schemas/Maintenance'
+        "400":
+          description: Invalid maintenance id
+        "404":
+          description: Maintenance record not found
   /trajet:
     get:
       tags: [Trajets]

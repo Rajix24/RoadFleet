@@ -13,22 +13,55 @@ class maintenanceRepository{
             throw error
         }
     }
+
+    async getById(id){
+        try{
+            const maintenance = await maintenanceModel.findById(id).populate("camion").populate("remorque")
+            return maintenance
+        }catch(error){
+            console.log(error)
+            throw error
+        }
+    }
+
+    async validateAssets(data){
+        const camionId = data.camion || data.vehicle
+        if (camionId && !await Camion.exists({ _id: camionId })) {
+            const error = new Error("Camion not found")
+            error.status = 404
+            throw error
+        }
+        if (data.remorque && !await Remorque.exists({ _id: data.remorque })) {
+            const error = new Error("Remorque not found")
+            error.status = 404
+            throw error
+        }
+    }
+
     async create(data){
         try{
-            const camionId = data.camion || data.vehicle
-            if (camionId && !await Camion.exists({ _id: camionId })) {
-                const error = new Error("Camion not found")
-                error.status = 404
-                throw error
-            }
-            if (data.remorque && !await Remorque.exists({ _id: data.remorque })) {
-                const error = new Error("Remorque not found")
-                error.status = 404
-                throw error
-            }
+            await this.validateAssets(data)
 
             const maintenance = await maintenanceModel.create(data)
             await this.syncAssetStatuses()
+            return maintenance
+        }catch(error){
+            console.log(error)
+            throw error
+        }
+    }
+
+    async update(id, data){
+        try{
+            await this.validateAssets(data)
+
+            const maintenance = await maintenanceModel.findByIdAndUpdate(
+                id,
+                { $set: data },
+                { new: true, runValidators: true }
+            ).populate("camion").populate("remorque")
+
+            if (maintenance) await this.syncAssetStatuses()
             return maintenance
         }catch(error){
             console.log(error)
@@ -70,6 +103,7 @@ class maintenanceRepository{
         }
         await Promise.all(updates)
     }
+
     async delete(params_id){
         try{
             const maintenance = await maintenanceModel.findByIdAndDelete(params_id)
@@ -78,6 +112,10 @@ class maintenanceRepository{
             console.log(error)
             throw error
         }
+    }
+
+    async deleteMaintenance(id){
+        return this.delete(id)
     }
 }
 
