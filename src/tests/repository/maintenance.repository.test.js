@@ -3,7 +3,13 @@ const Camion = require("../../models/camion.model")
 const Remorque = require("../../models/remorque.model")
 const Repository = require("../../repository/maintenance.repository")
 
-jest.mock("../../models/maintenance.model", () => ({ find: jest.fn(), create: jest.fn(), findByIdAndDelete: jest.fn() }))
+jest.mock("../../models/maintenance.model", () => ({
+  find: jest.fn(),
+  findById: jest.fn(),
+  create: jest.fn(),
+  findByIdAndUpdate: jest.fn(),
+  findByIdAndDelete: jest.fn()
+}))
 jest.mock("../../models/camion.model", () => ({ exists: jest.fn(), updateMany: jest.fn() }))
 jest.mock("../../models/remorque.model", () => ({ exists: jest.fn(), updateMany: jest.fn() }))
 
@@ -12,6 +18,12 @@ describe("maintenance repository", () => {
   test("lists records with camion and remorque populated", async () => {
     const records = []; const query = { populate: jest.fn() }; query.populate.mockReturnValueOnce(query).mockReturnValueOnce(Promise.resolve(records)); Model.find.mockReturnValue(query)
     await expect(Repository.getAll()).resolves.toBe(records)
+    expect(query.populate).toHaveBeenNthCalledWith(1, "camion"); expect(query.populate).toHaveBeenNthCalledWith(2, "remorque")
+  })
+  test("gets a record by id with camion and remorque populated", async () => {
+    const record = { id: "m1" }; const query = { populate: jest.fn() }; query.populate.mockReturnValueOnce(query).mockReturnValueOnce(Promise.resolve(record)); Model.findById.mockReturnValue(query)
+    await expect(Repository.getById("m1")).resolves.toBe(record)
+    expect(Model.findById).toHaveBeenCalledWith("m1")
     expect(query.populate).toHaveBeenNthCalledWith(1, "camion"); expect(query.populate).toHaveBeenNthCalledWith(2, "remorque")
   })
   test("creates maintenance and syncs asset statuses", async () => {
@@ -26,7 +38,38 @@ describe("maintenance repository", () => {
     await expect(Repository.create({ camion: "missing" })).rejects.toMatchObject({ status: 404, message: "Camion not found" })
     expect(Model.create).not.toHaveBeenCalled()
   })
-  test("deletes maintenance by id", async () => { const result = { id: "m1" }; Model.findByIdAndDelete.mockResolvedValue(result); await expect(Repository.delete("m1")).resolves.toBe(result); expect(Model.findByIdAndDelete).toHaveBeenCalledWith("m1") })
+  test("rejects creation when remorque does not exist", async () => {
+    Remorque.exists.mockResolvedValue(null)
+    await expect(Repository.create({ remorque: "missing" })).rejects.toMatchObject({ status: 404, message: "Remorque not found" })
+    expect(Model.create).not.toHaveBeenCalled()
+  })
+  test("updates a record and populates its assets", async () => {
+    const data = { status: "completed" }; const result = { id: "m1", ...data }
+    const query = { populate: jest.fn() }; query.populate.mockReturnValueOnce(query).mockReturnValueOnce(Promise.resolve(result))
+    Model.findByIdAndUpdate.mockReturnValue(query)
+    const activeQuery = { select: jest.fn().mockResolvedValue([]) }; Model.find.mockReturnValue(activeQuery)
+    await expect(Repository.update("m1", data)).resolves.toBe(result)
+    expect(Model.findByIdAndUpdate).toHaveBeenCalledWith("m1", { $set: data }, { new: true, runValidators: true })
+    expect(query.populate).toHaveBeenNthCalledWith(1, "camion"); expect(query.populate).toHaveBeenNthCalledWith(2, "remorque")
+  })
+  test("rejects update when the camion does not exist", async () => {
+    Camion.exists.mockResolvedValue(null)
+    await expect(Repository.update("m1", { camion: "missing" })).rejects.toMatchObject({ status: 404, message: "Camion not found" })
+    expect(Model.findByIdAndUpdate).not.toHaveBeenCalled()
+  })
+  test("returns null when updating an unknown record", async () => {
+    const query = { populate: jest.fn() }; query.populate.mockReturnValueOnce(query).mockReturnValueOnce(Promise.resolve(null))
+    Model.findByIdAndUpdate.mockReturnValue(query)
+    await expect(Repository.update("missing", {})).resolves.toBeNull()
+  })
+  test("deletes maintenance by id", async () => {
+    const result = { id: "m1" }; Model.findByIdAndDelete.mockResolvedValue(result)
+    await expect(Repository.delete("m1")).resolves.toBe(result); expect(Model.findByIdAndDelete).toHaveBeenCalledWith("m1")
+  })
+  test("deletes maintenance through the alias", async () => {
+    const result = { id: "m1" }; Model.findByIdAndDelete.mockResolvedValue(result)
+    await expect(Repository.deleteMaintenance("m1")).resolves.toBe(result); expect(Model.findByIdAndDelete).toHaveBeenCalledWith("m1")
+  })
   test("syncs maintenance status for assets", async () => {
     const query = { select: jest.fn().mockResolvedValue([{ camion: { toString: () => "c1" }, remorque: { toString: () => "r1" } }]) }
     Model.find.mockReturnValue(query); Camion.updateMany.mockResolvedValue({}); Remorque.updateMany.mockResolvedValue({})
