@@ -2,6 +2,11 @@ require("dotenv").config()
 
 const express = require('express')
 const mongoose = require('mongoose')
+const cors = require("cors")
+
+
+
+
 
 
 const userRouter = require("./src/routes/user.route")
@@ -23,10 +28,17 @@ const {initializeBucket} =  require("./src/services/fileStorage.service")
 const logger = require("./src/config/winston.createLogger")
 const requestHandler = require("./src/middlewares/request.handler.middleware")
 const errorHandler = require("./src/middlewares/errorHandler.middleware")
+const corsOptions = require('./src/middlewares/cros.middleware')
+
 
 const app = express()
+
+
 app.use(express.json())
 app.use(limiter)
+app.use(cors(corsOptions))
+
+
 const port = process.env.BACKEND_PORT || 3000
 const mongoseURL = process.env.MONGO_URL
 
