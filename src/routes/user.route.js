@@ -7,7 +7,7 @@ const  roleMiddleware  = require("../middlewares/role.middleware")
 
 
 // 
-route.get("/users",auth_middleware, roleMiddleware("chauffeur"), UserController.getAll)
+route.get("/users",auth_middleware, roleMiddleware("admin"), UserController.getAll)
 
 /**
  * @swagger

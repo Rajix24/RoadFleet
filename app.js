@@ -31,12 +31,21 @@ const errorHandler = require("./src/middlewares/errorHandler.middleware")
 const corsOptions = require('./src/middlewares/cros.middleware')
 
 
+const URL = "http://localhost:5173"
+
 const app = express()
 
 
 app.use(express.json())
-app.use(limiter)
-app.use(cors(corsOptions))
+app.use(cors({
+    origin: [URL],
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true ,
+}))
+
+// app.use(limiter)
+// app.use(cors(process.env.CORS_CLIENT))
 
 
 const port = process.env.BACKEND_PORT || 3000
@@ -53,6 +62,10 @@ app.get('/', (req, res) => {
 app.use(requestHandler);
 // error handler:
 
+app.use((req, res, next )=>{
+    console.log(req.headers.cookie, "ghdgashgdkajdgkhsagdkhsa ")
+        next()
+})
 
 // ROUTERS:
 app.use("/auth", auth_router)

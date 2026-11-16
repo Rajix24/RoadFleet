@@ -6,6 +6,7 @@ const { verify_token, setToken} = require("../utils/jwt.utils")
 
 // THAT FUNCTION IS DONE:
 async function login_user(req, res){
+    console.log("debug")
     try {
         // GET USER ON APPLICATION: 
         const {email, password} = req.body
@@ -29,13 +30,16 @@ async function login_user(req, res){
         res.json({
             message:"Successfull login",
             user: {
+                first_name: current_user.first_name,
+                last_name: current_user.last_name,
                 email: current_user.email,
+                role: current_user.role,
                 token: token
             }   
         })
 
     } catch (error) {
-        console.log(error)
+        console.log( error)
         return res.status(500).json({message: " server error " , error})
     }
 }

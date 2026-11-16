@@ -12,7 +12,7 @@ function verify_token(req, token){
 function setToken(current_user, res){
     const token = generate_token(current_user)
         res.cookie("access_token", token , {
-            httpOnlly: true ,
+            httpOnly: true,
             secure: false ,
             samefile: "lax",
             maxAge: 60 * 60 * 1000
